@@ -14,15 +14,16 @@ function onlyOne(id){
     return db.onlyOne(tabla, id);
 }
 
-function deleteAll(body) {
-    if (!body || !body.id) {
-        return Promise.reject(new Error('El cuerpo de la solicitud debe incluir un id válido'));
-    }
-    return db.deleteAll(tabla, body);
+function deleteAll(id) {
+    return db.deleteAll(tabla, id);
 }
 
 function add(body){
     return db.add(tabla, body);
+}
+
+function updateUser(id, body){
+    return db.updateUser(tabla,id, body);
 }
 
 function uploadProfilePhoto(body){
@@ -39,5 +40,6 @@ module.exports = {
     onlyOne,
     deleteAll,
     add,
+    updateUser,
     uploadProfilePhoto
 }

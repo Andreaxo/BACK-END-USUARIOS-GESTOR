@@ -59,8 +59,6 @@ function onlyOne(table, id){
 function add(table, data){
     if(data && data.id == 0){
         return addUser(table,data);
-    }else{
-        return updateUser(table, data);
     }
 }
 
@@ -73,36 +71,31 @@ function addUser(table, data){
     })
 }
 
-function updateUser(table,data){
+function updateUser(table, id, data) {
+    return new Promise((resolve, reject) => {
+        conection.query(
+            `UPDATE ${table} SET ? WHERE id = ?`, 
+            [data, id], 
+            (error, result) => {
+                if(error) return reject(error);
+                resolve(result);
+            }
+        );
+    });
+}
+
+
+
+
+function deleteAll(table, id) {
     return new Promise( (resolve, reject) => {
-        conection.query(`UPDATE ${table} SET ? WHERE id = ?`, [data, data.id], (error, result) =>{
+        conection.query(`DELETE FROM ${table} WHERE id = ${id}`, (error, result) =>{
             if(error) return reject(error);
             resolve(result);
         })
     })
 }
 
-
-
-function deleteAll(table, data) {
-    return new Promise((resolve, reject) => {
-        // Validar el nombre de la tabla para evitar inyección SQL
-        const validTables = ['clientes']; // Lista de tablas permitidas
-        if (!validTables.includes(table)) {
-            return reject(new Error('Tabla no válida'));
-        }
-
-        // Consulta SQL parametrizada
-        const query = `DELETE FROM ${table} WHERE id = ?`;
-
-        conection.query(query, [data.id], (error, result) => {
-            if (error) {
-                return reject(error);
-            }
-            resolve(result);
-        });
-    });
-}
 
 
 function uploadProfilePhoto(table, data){
@@ -122,6 +115,7 @@ module.exports = {
     all,
     onlyOne,
     add,
+    updateUser,
     deleteAll,
     uploadProfilePhoto
 }

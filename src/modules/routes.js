@@ -8,8 +8,9 @@ const controller = require('../modules/clientes/controller');
 // Asignación de rutas
 router.get('/', all); // Obtener todos los clientes
 router.get('/:id', onlyOne); // Obtener un cliente por ID
-router.post('/', add) // Añadir un cliente o actualizarlo
-router.delete('/', deleteAll); // Eliminar todos los clientes
+router.post('/', add) // Añadir un cliente 
+router.put('/:id',updateUser) // Actualizar clientez
+router.delete('/:id', deleteAll); // Eliminar todos los clientes
 
 
 
@@ -39,8 +40,6 @@ async function add(req, res, next) {
         const items = await controller.add(req.body);
         if(req.body.id == 0){
             message = 'Usuario creado con esito';
-        }else{
-            message = 'Usuario actualizado con esito';
         }
         response.success(req, res, message, 201);
     }catch(error){
@@ -49,16 +48,34 @@ async function add(req, res, next) {
     
 }
 
-// Eliminar todos los clientes
-async function deleteAll(req, res, next) {
+async function updateUser(req, res, next) {
     try {
-        await controller.deleteAll(req.body);
-        response.success(req, res, 'Clientes eliminados satisfactoriamente', 200);
+        // Validar que el id sea un número válido
+        const id = parseInt(req.params.id);
+        if (isNaN(id)) {
+            throw new Error('ID inválido');
+        }
+
+        // Pasar tanto el id como el body al controlador
+        const item = await controller.updateUser(id, req.body);
+        
+        response.success(req, res, item, 200);
     } catch (error) {
         next(error);
     }
 }
 
+
+
+// Eliminar todos los clientes
+async function deleteAll(req, res, next) {
+    try {
+        const item = await controller.deleteAll(req.params.id);
+        response.success(req, res, item, 200);
+    } catch (error) {
+        next(error);
+    }
+}
 
 
 
